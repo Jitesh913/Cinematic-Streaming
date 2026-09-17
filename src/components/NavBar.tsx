@@ -39,7 +39,7 @@ export function NavBar() {
         Reel
       </Link>
 
-      <div className="flex items-center gap-1 rounded-full border border-border bg-surface/80 px-1.5 py-1.5 backdrop-blur-md">
+        <div className="hidden items-center gap-1 rounded-full border border-border bg-surface/80 px-1.5 py-1.5 backdrop-blur-md md:flex">
         {links.map(({ href, label }) => {
           const active =
             href === "/" ? pathname === "/" : pathname.startsWith(href);
@@ -109,6 +109,24 @@ export function NavBar() {
             <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z" />
           </svg>
         </Link>
+      </div>
+            {/* Mobile-only nav links row */}
+      <div className="fixed left-0 right-0 top-16 z-40 flex items-center gap-1 overflow-x-auto border-b border-border bg-bg/80 px-4 py-2 backdrop-blur-md scrollbar-hide md:hidden">
+        {links.map(({ href, label }) => {
+          const active =
+            href === "/" ? pathname === "/" : pathname.startsWith(href);
+          return (
+            <Link
+              key={href}
+              href={href}
+              className={`shrink-0 rounded-full px-3 py-1.5 text-xs transition-colors duration-300 ${
+                active ? "bg-fg text-bg" : "text-muted hover:text-fg"
+              }`}
+            >
+              {label}
+            </Link>
+          );
+        })}
       </div>
     </motion.nav>
   );
