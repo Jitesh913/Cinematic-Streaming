@@ -7,6 +7,8 @@ import { discoverShows } from "@/lib/tmdb";
 import { useInfiniteScroll } from "@/hooks/useInfiniteScroll";
 import { FilterBar } from "@/components/FilterBar";
 import { TV_GENRES, YEARS } from "@/lib/genres";
+import { ComingSoonRail } from "@/components/ComingSoonRail";
+import { GridSkeleton } from "@/components/Skeletons";
 
 export default function ShowsPage() {
   const [shows, setShows] = useState<Media[]>([]);
@@ -67,6 +69,8 @@ export default function ShowsPage() {
         Discover new TV series to watch.
       </motion.p>
 
+        <ComingSoonRail mediaType="tv" />
+
       <FilterBar
         genre={genre}
         genres={TV_GENRES}
@@ -86,7 +90,17 @@ export default function ShowsPage() {
 
       <div ref={sentinelRef} className="h-20" />
 
-      {loading && <p className="text-center text-sm text-muted">Loading more…</p>}
+      {loading && shows.length === 0 && (
+        <div className="mt-12">
+          <GridSkeleton count={12} />
+        </div>
+      )}
+
+      {loading && shows.length > 0 && (
+        <div className="mt-12">
+          <GridSkeleton count={6} />
+        </div>
+      )}
 
       {!loading && page >= totalPages && shows.length > 0 && (
         <p className="text-center text-sm text-muted">You've reached the end.</p>

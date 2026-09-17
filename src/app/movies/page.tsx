@@ -7,6 +7,8 @@ import { discoverMovies } from "@/lib/tmdb";
 import { useInfiniteScroll } from "@/hooks/useInfiniteScroll";
 import { FilterBar } from "@/components/FilterBar";
 import { MOVIE_GENRES, YEARS } from "@/lib/genres";
+import { ComingSoonRail } from "@/components/ComingSoonRail";
+import { GridSkeleton } from "@/components/Skeletons";
 
 export default function MoviesPage() {
   const [movies, setMovies] = useState<Media[]>([]);
@@ -67,6 +69,8 @@ export default function MoviesPage() {
         Browse popular films.
       </motion.p>
 
+        <ComingSoonRail mediaType="movie" />
+
       <FilterBar
         genre={genre}
         genres={MOVIE_GENRES}
@@ -86,7 +90,17 @@ export default function MoviesPage() {
 
       <div ref={sentinelRef} className="h-20" />
 
-      {loading && <p className="text-center text-sm text-muted">Loading more…</p>}
+      {loading && movies.length === 0 && (
+        <div className="mt-12">
+          <GridSkeleton count={12} />
+        </div>
+      )}
+
+      {loading && movies.length > 0 && (
+        <div className="mt-12">
+          <GridSkeleton count={6} />
+        </div>
+      )}
 
       {!loading && page >= totalPages && movies.length > 0 && (
         <p className="text-center text-sm text-muted">You've reached the end.</p>

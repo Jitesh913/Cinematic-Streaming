@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import Link from "next/link";
 import { motion, AnimatePresence } from "motion/react";
+import { DetailSkeleton } from "@/components/Skeletons";
 import {
   getTVShow,
   getTVTrailer,
@@ -15,6 +16,7 @@ import {
   type Episode,
 } from "@/lib/tmdb";
 import { TrailerModal } from "@/components/TrailerModal";
+import { VideoPlayer } from "@/components/VideoPlayer";
 import { MyListButton } from "@/components/MyListButton";
 import { addToHistory } from "@/lib/storage";
 
@@ -25,6 +27,10 @@ export default function TVPage() {
   const [cast, setCast] = useState<CastMember[]>([]);
   const [modalOpen, setModalOpen] = useState(false);
   const [loading, setLoading] = useState(true);
+
+  const [showPlayer, setShowPlayer] = useState(false);
+  const [selectedSeason, setSelectedSeason] = useState(1);
+  const [selectedEpisode, setSelectedEpisode] = useState(1);
 
   const [episodesBySeason, setEpisodesBySeason] = useState<
     Record<number, Episode[]>
@@ -83,11 +89,7 @@ export default function TVPage() {
   };
 
   if (loading) {
-    return (
-      <main className="flex min-h-screen items-center justify-center">
-        <p className="text-sm text-muted">Loading…</p>
-      </main>
-    );
+    return <DetailSkeleton />;
   }
 
   if (!show) {
@@ -167,6 +169,23 @@ export default function TVPage() {
         </motion.p>
 
         <div className="mt-8 flex flex-wrap gap-3">
+          {/* Watch Now Button - Red */}
+          <motion.button
+            initial={{ opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{
+              duration: 0.6,
+              delay: 0.25,
+              ease: [0.25, 0.1, 0.25, 1],
+            }}
+            whileHover={{ scale: 1.03 }}
+            onClick={() => setShowPlayer(true)}
+            className="inline-flex items-center gap-2 rounded-full bg-red-600 hover:bg-red-700 px-7 py-3 text-sm font-medium text-white transition-colors"
+          >
+            ▶ Watch Now
+          </motion.button>
+
+          {/* Watch Trailer Button - White */}
           {trailerKey && (
             <motion.button
               initial={{ opacity: 0, y: 12 }}
@@ -180,7 +199,7 @@ export default function TVPage() {
               onClick={() => setModalOpen(true)}
               className="inline-flex items-center gap-2 rounded-full bg-fg px-7 py-3 text-sm font-medium text-bg"
             >
-              ▶ Watch trailer
+              ▶ Watch Trailer
             </motion.button>
           )}
           <MyListButton
@@ -322,39 +341,62 @@ export default function TVPage() {
                                 episodes.map((ep) => (
                                   <div
                                     key={ep.id}
-                                    className="flex gap-4 px-5 py-4"
+                                    className="flex gap-4 px-5 py-4 items-start group cursor-pointer hover:bg-surface/30 transition-colors"
                                   >
-                                    {ep.still_path ? (
-                                      <img
-                                        src={`https://image.tmdb.org/t/p/w300${ep.still_path}`}
-                                        alt={ep.name}
-                                        className="h-[68px] w-[120px] shrink-0 rounded object-cover"
-                                      />
-                                    ) : (
-                                      <div className="flex h-[68px] w-[120px] shrink-0 items-center justify-center rounded border border-border bg-surface/50">
-                                        <svg
-                                          width="20"
-                                          height="20"
-                                          viewBox="0 0 24 24"
-                                          fill="none"
-                                          stroke="currentColor"
-                                          strokeWidth="1.5"
-                                          strokeLinecap="round"
-                                          strokeLinejoin="round"
-                                          className="text-muted/60"
-                                        >
-                                          <rect
-                                            x="2"
-                                            y="3"
+                                    <div className="relative shrink-0">
+                                      {ep.still_path ? (
+                                        <img
+                                          src={`https://image.tmdb.org/t/p/w300${ep.still_path}`}
+                                          alt={ep.name}
+                                          className="h-[68px] w-[120px] rounded object-cover"
+                                        />
+                                      ) : (
+                                        <div className="flex h-[68px] w-[120px] shrink-0 items-center justify-center rounded border border-border bg-surface/50">
+                                          <svg
                                             width="20"
-                                            height="14"
-                                            rx="2"
-                                          />
-                                          <path d="m10 8 5 3-5 3V8Z" />
+                                            height="20"
+                                            viewBox="0 0 24 24"
+                                            fill="none"
+                                            stroke="currentColor"
+                                            strokeWidth="1.5"
+                                            strokeLinecap="round"
+                                            strokeLinejoin="round"
+                                            className="text-muted/60"
+                                          >
+                                            <rect
+                                              x="2"
+                                              y="3"
+                                              width="20"
+                                              height="14"
+                                              rx="2"
+                                            />
+                                            <path d="m10 8 5 3-5 3V8Z" />
+                                          </svg>
+                                        </div>
+                                      )}
+
+                                      {/* Play Icon Overlay */}
+                                      <button
+                                        onClick={() => {
+                                          setSelectedSeason(s.season_number);
+                                          setSelectedEpisode(ep.episode_number);
+                                          setShowPlayer(true);
+                                        }}
+                                        className="absolute inset-0 flex items-center justify-center rounded bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity"
+                                      >
+                                        <svg
+                                          width="24"
+                                          height="24"
+                                          viewBox="0 0 24 24"
+                                          fill="currentColor"
+                                          className="text-white ml-0.5"
+                                        >
+                                          <path d="M8 5v14l11-7z" />
                                         </svg>
-                                      </div>
-                                    )}
-                                    <div className="flex flex-col gap-1">
+                                      </button>
+                                    </div>
+
+                                    <div className="flex flex-col gap-1 flex-1">
                                       <p className="font-display text-sm leading-tight">
                                         {ep.episode_number}. {ep.name}
                                       </p>
@@ -387,6 +429,17 @@ export default function TVPage() {
         trailerKey={modalOpen ? trailerKey : null}
         onClose={() => setModalOpen(false)}
       />
+
+      {showPlayer && (
+        <VideoPlayer
+          mediaId={show.id}
+          mediaType="tv"
+          title={`${show.name} - S${selectedSeason}E${selectedEpisode}`}
+          seasonNumber={selectedSeason}
+          episodeNumber={selectedEpisode}
+          onClose={() => setShowPlayer(false)}
+        />
+      )}
     </main>
   );
 }

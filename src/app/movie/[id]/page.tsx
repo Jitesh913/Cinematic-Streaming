@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import Link from "next/link";
 import { motion } from "motion/react";
+import { DetailSkeleton } from "@/components/Skeletons";
 import {
   getMovie,
   getTrailer,
@@ -13,6 +14,7 @@ import {
   type CastMember,
 } from "@/lib/tmdb";
 import { TrailerModal } from "@/components/TrailerModal";
+import { VideoPlayer } from "@/components/VideoPlayer";
 import { MyListButton } from "@/components/MyListButton";
 import { addToHistory } from "@/lib/storage";
 
@@ -22,6 +24,7 @@ export default function MoviePage() {
   const [trailerKey, setTrailerKey] = useState<string | null>(null);
   const [cast, setCast] = useState<CastMember[]>([]);
   const [modalOpen, setModalOpen] = useState(false);
+  const [showPlayer, setShowPlayer] = useState(false);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -54,11 +57,7 @@ export default function MoviePage() {
   }, [params?.id]);
 
   if (loading) {
-    return (
-      <main className="flex min-h-screen items-center justify-center">
-        <p className="text-sm text-muted">Loading…</p>
-      </main>
-    );
+    return <DetailSkeleton />;
   }
 
   if (!movie) {
@@ -129,6 +128,23 @@ export default function MoviePage() {
         </motion.p>
 
         <div className="mt-8 flex flex-wrap gap-3">
+          {/* Watch Now Button - Red */}
+          <motion.button
+            initial={{ opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{
+              duration: 0.6,
+              delay: 0.25,
+              ease: [0.25, 0.1, 0.25, 1],
+            }}
+            whileHover={{ scale: 1.03 }}
+            onClick={() => setShowPlayer(true)}
+            className="inline-flex items-center gap-2 rounded-full bg-red-600 hover:bg-red-700 px-7 py-3 text-sm font-medium text-white transition-colors"
+          >
+            ▶ Watch Now
+          </motion.button>
+
+          {/* Watch Trailer Button - White */}
           {trailerKey && (
             <motion.button
               initial={{ opacity: 0, y: 12 }}
@@ -142,7 +158,7 @@ export default function MoviePage() {
               onClick={() => setModalOpen(true)}
               className="inline-flex items-center gap-2 rounded-full bg-fg px-7 py-3 text-sm font-medium text-bg"
             >
-              ▶ Watch trailer
+              ▶ Watch Trailer
             </motion.button>
           )}
           <MyListButton
@@ -208,6 +224,15 @@ export default function MoviePage() {
         trailerKey={modalOpen ? trailerKey : null}
         onClose={() => setModalOpen(false)}
       />
+
+      {showPlayer && (
+        <VideoPlayer
+          mediaId={movie.id}
+          mediaType="movie"
+          title={movie.title}
+          onClose={() => setShowPlayer(false)}
+        />
+      )}
     </main>
   );
 }

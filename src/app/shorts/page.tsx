@@ -112,6 +112,27 @@ export default function ShortsPage() {
       ref={containerRef}
       className="fixed inset-0 z-40 h-screen w-screen snap-y snap-mandatory overflow-y-scroll overscroll-contain bg-black scrollbar-hide"
     >
+            <motion.a
+        href="/"
+        initial={{ opacity: 0, y: -10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5, delay: 0.3 }}
+        className="fixed left-6 top-6 z-50 flex h-10 w-10 items-center justify-center rounded-full bg-black/60 text-white backdrop-blur-sm transition-colors hover:bg-black/80 md:left-16"
+        aria-label="Back to home"
+      >
+        <svg
+          width="18"
+          height="18"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2.5"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        >
+          <path d="m15 18-6-6 6-6" />
+        </svg>
+      </motion.a>
       {items.map((item, i) => (
         <div
           key={`${item.media_type}-${item.id}`}

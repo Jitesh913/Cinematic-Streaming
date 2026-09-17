@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { motion } from "motion/react";
+import { useScrollDirection } from "@/hooks/useScrollDirection";
 
 const links = [
   { href: "/", label: "Home" },
@@ -14,12 +15,21 @@ const links = [
 
 export function NavBar() {
   const pathname = usePathname();
+  const scrolled = useScrollDirection();
+  const onShorts = pathname.startsWith("/shorts");
+  const hidden = scrolled || onShorts;
 
   return (
     <motion.nav
       initial={{ opacity: 0, y: -20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.6, ease: [0.25, 0.1, 0.25, 1] }}
+      animate={{
+        opacity: 1,
+        y: hidden ? -120 : 0,
+      }}
+      transition={{
+        y: { type: "spring", stiffness: 320, damping: 32, mass: 0.6 },
+        opacity: { duration: 0.6, ease: [0.25, 0.1, 0.25, 1] },
+      }}
       className="fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-6 py-5 md:px-16"
     >
       <Link

@@ -301,3 +301,49 @@ export const getWatchProviders = async (
   );
   return data.results?.[region] ?? null;
 };
+
+export type MultiSearchResult = {
+  id: number;
+  media_type: "movie" | "tv" | "person";
+  title?: string;
+  name?: string;
+  overview: string;
+  poster_path: string | null;
+  backdrop_path: string | null;
+  release_date?: string;
+  first_air_date?: string;
+  vote_average: number;
+};
+
+export const searchMulti = (q: string) =>
+  tmdb<{ results: MultiSearchResult[] }>("/search/multi", { query: q }).then(
+    (r) => r.results.filter((x) => x.media_type !== "person")
+  );
+
+export const getUpcomingMovies = () => {
+  const today = new Date().toISOString().split("T")[0];
+  const future = new Date();
+  future.setMonth(future.getMonth() + 6);
+  const sixMonths = future.toISOString().split("T")[0];
+
+  return tmdb<{ results: Movie[] }>("/discover/movie", {
+    sort_by: "primary_release_date.asc",
+    "primary_release_date.gte": today,
+    "primary_release_date.lte": sixMonths,
+    with_release_type: "2|3",
+  }).then((r) => r.results);
+};
+
+export const getOnTheAirTV = () => {
+  const today = new Date().toISOString().split("T")[0];
+  const future = new Date();
+  future.setMonth(future.getMonth() + 6);
+  const sixMonths = future.toISOString().split("T")[0];
+
+  return tmdb<{ results: Movie[] }>("/discover/tv", {
+    sort_by: "first_air_date.asc",
+    "first_air_date.gte": today,
+    "first_air_date.lte": sixMonths,
+    "vote_count.gte": "5",
+  }).then((r) => r.results);
+};

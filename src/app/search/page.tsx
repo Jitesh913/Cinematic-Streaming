@@ -2,12 +2,12 @@
 
 import { useState, useEffect } from "react";
 import { motion } from "motion/react";
-import { MovieCard } from "@/components/MovieCard";
-import { searchMovies, type Movie } from "@/lib/tmdb";
+import { MovieCard, type Media } from "@/components/MovieCard";
+import { searchMulti } from "@/lib/tmdb";
 
 export default function SearchPage() {
   const [query, setQuery] = useState("");
-  const [results, setResults] = useState<Movie[]>([]);
+  const [results, setResults] = useState<Media[]>([]);
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
@@ -18,8 +18,23 @@ export default function SearchPage() {
 
     setLoading(true);
     const timer = setTimeout(() => {
-      searchMovies(query)
-        .then((movies) => setResults(movies))
+      searchMulti(query)
+        .then((items) =>
+          setResults(
+            items.map((x) => ({
+              id: x.id,
+              title: x.title,
+              name: x.name,
+              overview: x.overview,
+              poster_path: x.poster_path,
+              backdrop_path: x.backdrop_path,
+              release_date: x.release_date,
+              first_air_date: x.first_air_date,
+              vote_average: x.vote_average,
+              media_type: x.media_type as "movie" | "tv",
+            }))
+          )
+        )
         .catch(() => setResults([]))
         .finally(() => setLoading(false));
     }, 400);
@@ -28,7 +43,7 @@ export default function SearchPage() {
   }, [query]);
 
   return (
-<main className="min-h-screen px-6 pt-32 pb-24 md:px-16">
+    <main className="min-h-screen px-6 pt-32 pb-24 md:px-16">
       <motion.h1
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -45,22 +60,17 @@ export default function SearchPage() {
         type="text"
         value={query}
         onChange={(e) => setQuery(e.target.value)}
-        placeholder="Type a movie title…"
+        placeholder="Search movies and shows…"
         className="mt-8 w-full max-w-xl rounded-full border border-border bg-surface px-6 py-3 text-fg placeholder:text-muted focus:outline-none focus:ring-1 focus:ring-muted"
         autoFocus
       />
 
       {loading && <p className="mt-6 text-sm text-muted">Searching…</p>}
 
-      {results.length > 0 && (
-        <div className="mt-12 flex flex-wrap gap-5">
+      {!loading && results.length > 0 && (
+        <div className="mt-12 grid grid-cols-2 gap-5 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6">
           {results.map((movie, i) => (
-            <div
-              key={movie.id}
-              className="w-[calc(50%-10px)] sm:w-[calc(33.333%-14px)] md:w-[150px] lg:w-[170px]"
-            >
-              <MovieCard movie={movie} index={i} />
-            </div>
+            <MovieCard key={`${movie.media_type}-${movie.id}`} movie={movie} index={i} />
           ))}
         </div>
       )}
