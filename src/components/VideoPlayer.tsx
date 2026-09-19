@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { motion } from "motion/react";
 import { X, RefreshCw } from "lucide-react";
 
@@ -70,18 +70,6 @@ export function VideoPlayer({
   const [sourceIndex, setSourceIndex] = useState(0);
   const [iframeKey, setIframeKey] = useState(0);
   const current = sources[sourceIndex];
-
-  // Auto-fallback through servers every 8 seconds
-  useEffect(() => {
-    if (sourceIndex >= sources.length - 1) return;
-
-    const timer = setTimeout(() => {
-      setSourceIndex((i) => Math.min(i + 1, sources.length - 1));
-      setIframeKey((k) => k + 1);
-    }, 8000);
-
-    return () => clearTimeout(timer);
-  }, [sourceIndex, sources.length]);
 
   const switchTo = (index: number) => {
     setSourceIndex(index);
