@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { motion } from "motion/react";
 import { useScrollDirection } from "@/hooks/useScrollDirection";
+import { BackButton } from "./BackButton";
 
 const links = [
   { href: "/", label: "Home" },
@@ -32,12 +33,15 @@ export function NavBar() {
       }}
       className="fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-6 py-5 md:px-16"
     >
-      <Link
-        href="/"
-        className="font-display text-xl tracking-tight text-fg transition-opacity duration-300 hover:opacity-80"
-      >
-        Reel
-      </Link>
+      <div className="flex items-center">
+        <BackButton />
+        <Link
+          href="/"
+          className="font-display text-xl tracking-tight text-fg transition-opacity duration-300 hover:opacity-80"
+        >
+          Reel
+        </Link>
+      </div>
 
         <div className="hidden items-center gap-1 rounded-full border border-border bg-surface/80 px-1.5 py-1.5 backdrop-blur-md md:flex">
         {links.map(({ href, label }) => {
