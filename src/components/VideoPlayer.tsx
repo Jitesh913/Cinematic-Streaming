@@ -43,7 +43,7 @@ export function VideoPlayer({
         {
           id: "vidsrc",
           label: "Server 3",
-          url: `https://vidsrc.sbs/embed/movie/${mediaId}`,
+          url: `https://vidsrc.to/embed/movie/${mediaId}`,
         },
       ];
     }
@@ -62,7 +62,7 @@ export function VideoPlayer({
       {
         id: "vidsrc",
         label: "Server 3",
-        url: `https://vidsrc.sbs/embed/tv/${mediaId}/${seasonNumber}/${episodeNumber}`,
+        url: `https://vidsrc.to/embed/tv/${mediaId}/${seasonNumber}/${episodeNumber}`,
       },
     ];
   }, [mediaId, mediaType, seasonNumber, episodeNumber]);
